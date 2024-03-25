@@ -1,5 +1,8 @@
 import os
+import sys
 from pathlib import Path
+
+from termcolor import cprint
 
 CONFIG_FILE_PATH = os.getenv("SSH_CONFIG_PATH") or str(Path.home()) + "/.ssh/config"
 KEY_DIR_PATH = os.getenv("SSH_KEY_DIR") or str(Path.home()) + "/.ssh/keys"
@@ -8,14 +11,19 @@ SSH_DEFAULT_PORT = os.getenv("SSH_DEFAULT_PORT") or 22
 EDITOR = os.getenv("EDITOR") or "nano"
 CANCEL = "❌  Cancel"
 
-# check if the config file exists
-if not Path(CONFIG_FILE_PATH).exists():
-    raise FileNotFoundError(f"Config file not found at {CONFIG_FILE_PATH}")
+if 'pytest' not in sys.modules.keys():
+    # check if the config file exists
+    if not Path(CONFIG_FILE_PATH).exists():
+        # create the config file if it doesn't exist
+        Path(CONFIG_FILE_PATH).touch()
+        cprint(f"Config file created at {CONFIG_FILE_PATH}", "yellow")
 
-# check if the key directory exists
-if not Path(KEY_DIR_PATH).exists():
-    raise FileNotFoundError(f"Key directory not found at {KEY_DIR_PATH}")
+    # check if the key directory exists
+    if not Path(KEY_DIR_PATH).exists():
+        # create the key directory if it doesn't exist
+        Path(KEY_DIR_PATH).mkdir(parents=True)
+        cprint(f"Key directory created at {KEY_DIR_PATH}", "yellow")
 
-# check if all the required environment variables are set
-if not DEFAULT_USER:
-    raise ValueError("Environment variable USER not set, please set it to your username")
+    # check if all the required environment variables are set
+    if not DEFAULT_USER:
+        raise ValueError("Environment variable USER not set, please set it to your username")
