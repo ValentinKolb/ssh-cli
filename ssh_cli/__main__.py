@@ -78,6 +78,8 @@ def run_shell():
             case _:
                 print("Invalid option")
 
+        print()
+
     cprint("Exiting - run `ssh-cli` to start again.", "yellow")
 
 
@@ -111,7 +113,7 @@ def main():
     if args.shell:
         run_shell()
     elif args.version:
-        print("ssh-cli v2.1.1")
+        print("ssh-cli v2.1.2")
     elif args.connect:
         cmd_connect()
     elif args.list:
