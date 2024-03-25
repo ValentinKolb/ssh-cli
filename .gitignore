@@ -1,0 +1,10 @@
+# MacOS
+.DS_Store
+
+# PyCharm
+.idea
+
+# Python
+dist
+.pytest_cache
+requirements.txt

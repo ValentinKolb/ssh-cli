@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "ssh-cli"
+version = "1.0.0"
+description = "cli to manage the ssh config file"
+authors = ["valentinkolb <valentin.kolb@uni-ulm.de>"]
+readme = "README.md"
+license = "MIT"
+keywords = ["ssh", "cli", "config"]
+classifiers = [
+    "Environment :: Console",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+packages = [{include = "ssh_cli"}]
+
+[tool.poetry.scripts]
+ssh-cli = "ssh_cli:main"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+inquirer = "^3.2.4"
+sshconf = "^0.2.5"
+prettytable = "^3.10.0"
+termcolor = "^2.4.0"
+validators = "^0.24.0"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
