@@ -7,7 +7,7 @@ from prettytable import PrettyTable
 from sshconf import read_ssh_config
 from termcolor import cprint
 
-from .config import CONFIG_FILE_PATH, KEY_DIR_PATH, DEFAULT_USER, SSH_DEFAULT_PORT, EDITOR, CANCEL
+from .config import CONFIG_FILE_PATH, KEY_DIR_PATH, DEFAULT_USER, SSH_DEFAULT_PORT, EDITOR, CANCEL, KEY_TYPE
 from .validation import is_number, is_not_empty, is_valid_hostname, host_exists
 
 
@@ -98,7 +98,7 @@ def cmd_create():
     if inquirer.confirm("Do you want to use a passkey?", default=True):
         host = answers["host"]
         key_file = f'{KEY_DIR_PATH}/{host}'
-        res = subprocess.run(["ssh-keygen", "-t", "ed25519", "-C", f"'key_for_{host}'", "-f", key_file, "-q"])
+        res = subprocess.run(["ssh-keygen", "-t", KEY_TYPE, "-C", f"'key_for_{host}'", "-f", key_file, "-q"])
         if res.returncode != 0:
             cprint(f"Error creating key file: {res.stderr}", "red")
             return

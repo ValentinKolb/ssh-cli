@@ -1,11 +1,13 @@
 [tool.poetry]
 name = "ssh-cli"
-version = "2.0.0"
+version = "2.1.0"
 description = "cli to manage the ssh config file"
 authors = ["valentinkolb <valentin.kolb@uni-ulm.de>"]
 readme = "README.md"
 license = "MIT"
 keywords = ["ssh", "cli", "config"]
+repository = "https://github.com/ValentinKolb/ssh-cli"
+homepage = "https://github.com/ValentinKolb/ssh-cli"
 classifiers = [
     "Environment :: Console",
     "Operating System :: OS Independent",
@@ -13,7 +15,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-packages = [{include = "ssh_cli"}]
+packages = [{ include = "ssh_cli" }]
 
 [tool.poetry.scripts]
 ssh-cli = "ssh_cli:main"
