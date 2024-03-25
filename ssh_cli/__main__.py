@@ -20,17 +20,22 @@ def show_config():
     cprint(f"Editor: {EDITOR}")
 
 
-def run_shell():
+def show_title():
     """
-    This is the main function that starts the tool and prompts the user to select an action.
+    This function prints the welcome title.
     """
     print()
-    cprint("Welcome to the SSH Tool", "green")
+    cprint("Welcome to the SSH CLI Tool", "green")
     print()
     cprint("This tool helps you manage your ssh config and keys", "green")
     cprint("(c) Valentin Kolb 2024", "green")
     print()
 
+
+def run_shell():
+    """
+    This is the main function that starts the tool and prompts the user to select an action.
+    """
     questions = [
         inquirer.List(
             "cmd",
@@ -99,7 +104,8 @@ def main():
 
     args = parser.parse_args()
 
-    print(args)
+    # show the title
+    show_title()
 
     # run the appropriate function
     if args.shell:
