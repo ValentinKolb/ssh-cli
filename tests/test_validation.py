@@ -2,7 +2,7 @@
 
 import pytest
 
-from ..ssh_cli.validation import is_number, is_not_empty, is_valid_hostname
+from ssh_cli.validation import is_number, is_not_empty, is_valid_hostname
 
 
 def test_is_number():

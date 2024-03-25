@@ -52,4 +52,4 @@ jobs:
       #              run test suite
       #----------------------------------------------
       - name: Run tests
-        run: poetry run pytest -v tests/
+        run: PYTHONPATH=./ssh_cli poetry run pytest -v tests/
