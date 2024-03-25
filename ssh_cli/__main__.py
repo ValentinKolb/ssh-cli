@@ -111,7 +111,7 @@ def main():
     if args.shell:
         run_shell()
     elif args.version:
-        print("ssh-cli v2.1.0")
+        print("ssh-cli v2.1.1")
     elif args.connect:
         cmd_connect()
     elif args.list:

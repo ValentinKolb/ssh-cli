@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ssh-cli"
-version = "2.1.0"
+version = "2.1.1"
 description = "cli to manage the ssh config file"
 authors = ["valentinkolb <valentin.kolb@uni-ulm.de>"]
 readme = "README.md"
