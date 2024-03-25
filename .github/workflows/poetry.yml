@@ -37,6 +37,7 @@ jobs:
         run: PYTHONPATH=./ssh_cli poetry run pytest -v tests/
 
   publish:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository

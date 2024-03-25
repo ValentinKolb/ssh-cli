@@ -5,13 +5,13 @@ This cli tool allows you to create and manage your SSH config file.
 ## Installation
 
 ```bash
-pip install ssh-tool
+pip install ssh-cli
 ```
 
 ## Usage
 
 ```bash
-ssh-tool
+ssh-cli
 ```
 
 ## Features
