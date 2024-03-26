@@ -54,6 +54,10 @@ def cmd_connect():
         cprint(f"Error connecting to host{f' : {res.stderr}' if res.stderr else ''}", "red")
         return
 
+    if os.getenv("HOSTNAME"):
+        print()
+        cprint(f"Welcome back on {os.getenv('HOSTNAME')}!", "green")
+
 
 def cmd_create():
     """
