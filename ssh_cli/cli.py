@@ -1,14 +1,38 @@
 import os
 import subprocess
+from pathlib import Path
 
 import inquirer
 import validators
 from prettytable import PrettyTable
 from sshconf import read_ssh_config
-from termcolor import cprint
+from termcolor import cprint, colored
 
 from .config import CONFIG_FILE_PATH, KEY_DIR_PATH, DEFAULT_USER, SSH_DEFAULT_PORT, EDITOR, CANCEL, KEY_TYPE
 from .validation import is_number, is_not_empty, is_valid_hostname, host_exists
+
+
+def get_public_key(host) -> str | None:
+    """
+    This function reads the public key file for a host and returns its content.
+    :param host: The host name
+    :return: The content of the public key file or None if the file doesn't exist
+    """
+    c = read_ssh_config(CONFIG_FILE_PATH)
+
+    if c.host(host) is None:
+        return
+
+    if not c.host(host).get("identityfile"):
+        return
+
+    path = f'{c.host(host).get("identityfile")}.pub'
+
+    if not Path(path).exists():
+        return f"public key file not found at {path}"
+
+    with open(path) as file:
+        return colored(file.read().strip(), "white", "on_black")
 
 
 def cmd_list():
@@ -19,10 +43,16 @@ def cmd_list():
 
     table = PrettyTable()
 
-    table.field_names = ["Name", "Host"]
+    table.field_names = ["Name", "Host", "Public Key", "User", "Port"]
     table.add_rows(
         [
-            [host, c.host(host).get("hostname")]
+            [
+                host,
+                c.host(host).get("hostname"),
+                get_public_key(host) or "--",
+                c.host(host).get("user"),
+                c.host(host).get("port")
+            ]
             for host in sorted(c.hosts())
         ]
     )
@@ -115,6 +145,12 @@ def cmd_create():
     if inquirer.confirm("Do you want to save this host?", default=True):
         c.write(CONFIG_FILE_PATH)
         cprint(f'Host {answers["host"]} saved', "green")
+
+        if key_file:
+            with open(f'{key_file}.pub') as file:
+                public_key = file.read().strip()
+            cprint(f"Public key for {answers['host']}: {colored(public_key, 'white', 'on_black')}")
+            cprint(f'Key file for host {answers["host"]} saved at {key_file}', "green")
     else:
         # remove key file again if it was created
         if key_file:
@@ -147,7 +183,7 @@ def cmd_delete():
         return
 
     # remove key file if it exists
-    key_file = c.host(answers["host"]).get("IdentityFile")
+    key_file = c.host(answers["host"]).get("identityfile")
     if key_file:
         os.remove(key_file)
         os.remove(f'{key_file}.pub')
@@ -178,10 +214,6 @@ def cmd_cleanup():
     if not inquirer.confirm("Are you sure you want to cleanup?", default=False):
         cprint("Cancelled cleanup", "yellow")
         return
-
-    # create key dir if it doesn't exist
-    if not os.path.exists(KEY_DIR_PATH):
-        os.makedirs(KEY_DIR_PATH)
 
     # read all key files
     try:

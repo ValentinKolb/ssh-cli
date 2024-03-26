@@ -4,7 +4,7 @@ import inquirer
 from termcolor import cprint
 
 from .cli import cmd_cleanup, cmd_connect, cmd_create, cmd_delete, cmd_editor, cmd_list
-from .config import CONFIG_FILE_PATH, KEY_DIR_PATH, KEY_TYPE, DEFAULT_USER, SSH_DEFAULT_PORT, EDITOR
+from .config import CONFIG_FILE_PATH, KEY_DIR_PATH, KEY_TYPE, DEFAULT_USER, SSH_DEFAULT_PORT, EDITOR, VERSION
 
 
 def show_config():
@@ -113,7 +113,7 @@ def main():
     if args.shell:
         run_shell()
     elif args.version:
-        print("ssh-cli v2.1.2")
+        print(VERSION)
     elif args.connect:
         cmd_connect()
     elif args.list:
