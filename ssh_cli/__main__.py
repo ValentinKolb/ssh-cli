@@ -3,24 +3,14 @@ from argparse import ArgumentParser
 import inquirer
 from termcolor import cprint
 
-from .cli import cmd_cleanup, cmd_connect, cmd_create, cmd_delete, cmd_editor, cmd_list
+from .cmds import CreateCmd, ConnectCmd, DeleteCmd, EditorCmd, ListCmd, ShowHostCmd, CleanupCmd
+from .cmds.interface import Command
 from .config import CONFIG_FILE_PATH, KEY_DIR_PATH, KEY_TYPE, DEFAULT_USER, SSH_DEFAULT_PORT, EDITOR, VERSION
 
-
-def show_config():
-    """
-    This function prints the configuration of this tool.
-    """
-    cprint("Configuration", "green")
-    cprint(f"Config file path: {CONFIG_FILE_PATH}")
-    cprint(f"Key directory path: {KEY_DIR_PATH}")
-    cprint(f"Key type: {KEY_TYPE}")
-    cprint(f"Default user: {DEFAULT_USER}")
-    cprint(f"Default port: {SSH_DEFAULT_PORT}")
-    cprint(f"Editor: {EDITOR}")
+COMMANDS = [ListCmd(), ShowHostCmd(), ConnectCmd(), CreateCmd(), DeleteCmd(), EditorCmd(), CleanupCmd()]
 
 
-def show_title():
+def _show_title():
     """
     This function prints the welcome title.
     """
@@ -32,55 +22,84 @@ def show_title():
     print()
 
 
-def run_shell():
-    """
-    This is the main function that starts the tool and prompts the user to select an action.
-    """
-    questions = [
-        inquirer.List(
-            "cmd",
-            message="What do you want to do?",
-            choices=[
-                "Connect to host",
-                "List hosts",
-                "Create a new host",
-                "Delete a host",
-                "Edit config file",
-                "Cleanup",
-                "Exit"
-            ],
-        ),
-    ]
+class ShowCLIConfig(Command):
 
-    while True:
-        answers = inquirer.prompt(questions)
+    @property
+    def help(self):
+        return "Show the configuration of the CLI"
 
-        if answers is None and inquirer.confirm("Do you want to exit?", default=True):
-            break
-        elif answers is None:
-            continue
+    @property
+    def cmd(self):
+        return "config"
 
-        match answers["cmd"]:
-            case "Connect to host":
-                cmd_connect()
-            case "List hosts":
-                cmd_list()
-            case "Create a new host":
-                cmd_create()
-            case "Delete a host":
-                cmd_delete()
-            case "Edit config file":
-                cmd_editor()
-            case "Cleanup":
-                cmd_cleanup()
-            case "Exit":
+    def run(self, *args, **kwargs) -> int:
+        """
+        This function prints the configuration of this tool.
+        """
+        cprint("Configuration", "green")
+        cprint(f"Config file path: {CONFIG_FILE_PATH}")
+        cprint(f"Key directory path: {KEY_DIR_PATH}")
+        cprint(f"Key type: {KEY_TYPE}")
+        cprint(f"Default user: {DEFAULT_USER}")
+        cprint(f"Default port: {SSH_DEFAULT_PORT}")
+        cprint(f"Editor: {EDITOR}")
+        return 0
+
+
+class ShellCmd(Command):
+
+    @property
+    def help(self):
+        return "Start the interactive shell"
+
+    @property
+    def cmd(self):
+        return "shell"
+
+    def run(self, *args, **kwargs) -> int:
+
+        questions = [
+            inquirer.List(
+                "cmd",
+                message="What do you want to do?",
+                choices=[cmd.help for cmd in COMMANDS],
+            ),
+        ]
+
+        while True:
+            answers = inquirer.prompt(questions)
+
+            if answers is None and inquirer.confirm("Do you want to exit?", default=True):
                 break
-            case _:
-                print("Invalid option")
+            elif answers is None:
+                continue
 
-        print()
+            for cmd in COMMANDS:
+                if cmd.help == answers["cmd"]:
+                    cmd.run()
+                    break
+            else:
+                cprint("Invalid option", "red")
 
-    cprint("Exiting - run `ssh-cli` to start again.", "yellow")
+            print()
+
+        cprint("Exiting - run `ssh-cli` to start again.", "yellow")
+        return 0
+
+
+class VersionCmd(Command):
+
+    @property
+    def help(self):
+        return "Show the version of this tool"
+
+    @property
+    def cmd(self):
+        return "version"
+
+    def run(self, *args, **kwargs) -> int:
+        cprint(VERSION, "green")
+        return 0
 
 
 def main():
@@ -93,41 +112,22 @@ def main():
         description="A simple CLI tool to manage your ssh config and keys",
     )
 
-    # add arguments
-    parser.add_argument("--shell", action="store_true", help="Run the interactive shell")
-    parser.add_argument("--connect", action="store_true", help="Connect to a host")
-    parser.add_argument("--list", action="store_true", help="List hosts")
-    parser.add_argument("--create", action="store_true", help="Create a new host")
-    parser.add_argument("--delete", action="store_true", help="Delete a host")
-    parser.add_argument("--edit", action="store_true", help="Edit the config file")
-    parser.add_argument("--cleanup", action="store_true", help="Cleanup")
-    parser.add_argument("--show-config", action="store_true", help="Show the config of this tool")
-    parser.add_argument("--version", action="store_true", help="Print the version of the tool")
+    commands = [ShellCmd(), *COMMANDS, ShowCLIConfig(), VersionCmd()]
+
+    # add the arguments
+    for cmd in commands:
+        parser.add_argument(f"--{cmd.cmd}", action="store_true", help=cmd.help)
 
     args = parser.parse_args()
 
     # show the title
-    show_title()
+    _show_title()
 
     # run the appropriate function
-    if args.shell:
-        run_shell()
-    elif args.version:
-        print(VERSION)
-    elif args.connect:
-        cmd_connect()
-    elif args.list:
-        cmd_list()
-    elif args.create:
-        cmd_create()
-    elif args.delete:
-        cmd_delete()
-    elif args.edit:
-        cmd_editor()
-    elif args.cleanup:
-        cmd_cleanup()
-    elif args.show_config:
-        show_config()
+    for cmd in commands:
+        if getattr(args, cmd.cmd):
+            code = cmd.run()
+            exit(code)
     else:
         parser.print_help()
 
