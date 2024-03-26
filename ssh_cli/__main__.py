@@ -110,7 +110,7 @@ def main():
 
     # create a parser object
     parser = ArgumentParser(
-        description="A simple CLI tool to manage your ssh config and keys",
+        description="A simple CLI tool to manage your ssh config",
     )
 
     commands = [ShellCmd(), *COMMANDS, ShowCLIConfig(), VersionCmd()]
