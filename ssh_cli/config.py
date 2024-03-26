@@ -4,8 +4,6 @@ from pathlib import Path
 
 from termcolor import cprint
 
-VERSION = "ssh-cli v2.3.0"
-
 CONFIG_FILE_PATH = os.getenv("SSH_CLI_CONFIG_PATH") or str(Path.home()) + "/.ssh/config"
 KEY_DIR_PATH = os.getenv("SSH_CLI_KEY_DIR") or str(Path.home()) + "/.ssh/keys"
 KEY_TYPE = os.getenv("SSH_CLI_KEY_TYPE") or "ed25519"

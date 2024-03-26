@@ -5,7 +5,9 @@ from termcolor import cprint
 
 from .cmds import CreateCmd, ConnectCmd, DeleteCmd, EditorCmd, ListCmd, ShowHostCmd, CleanupCmd
 from .cmds.interface import Command
-from .config import CONFIG_FILE_PATH, KEY_DIR_PATH, KEY_TYPE, DEFAULT_USER, SSH_DEFAULT_PORT, EDITOR, VERSION
+from .config import CONFIG_FILE_PATH, KEY_DIR_PATH, KEY_TYPE, DEFAULT_USER, SSH_DEFAULT_PORT, EDITOR
+
+from importlib.metadata import version
 
 COMMANDS = [ListCmd(), ShowHostCmd(), ConnectCmd(), CreateCmd(), DeleteCmd(), EditorCmd(), CleanupCmd()]
 
@@ -98,7 +100,7 @@ class VersionCmd(Command):
         return "version"
 
     def run(self, *args, **kwargs) -> int:
-        cprint(VERSION, "green")
+        cprint(f"ssh-cli v{version('wheel')}", "green")
         return 0
 
 
