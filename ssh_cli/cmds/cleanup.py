@@ -24,9 +24,6 @@ def _cleanup_key_files(c):
         if os.path.isfile(os.path.join(KEY_DIR_PATH, f))
     )
 
-    print(f"Used key files: {used_key_files}")
-    print(f"Found key files: {found_key_files}")
-
     # step 3, get all key files that are not in the ssh config
     unused_key_files = [key_file for key_file in found_key_files if key_file not in used_key_files]
 
